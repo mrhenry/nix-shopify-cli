@@ -33,11 +33,6 @@ let
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
       bundle config set --local without development:test
       bundle config set --local force_ruby_platform true
-      # bundle lock --add-platform x86_64-linux
-      # bundle lock --add-platform x86_64-darwin
-      # bundle lock --add-platform arm-linux
-      # bundle lock --add-platform arm-darwin
-      # bundle lock --add-platform universal-darwin
       bundle cache --no-install
       cd -
     '';
