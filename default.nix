@@ -59,7 +59,7 @@ let
 
     src = download;
 
-    buildInputs = [ pkgs.nodejs pkgs.ruby pkgs.makeWrapper ];
+    buildInputs = [ pkgs.nodejs pkgs.ruby pkgs.makeWrapper ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin [ pkgs.libiconv ];
 
     buildPhase = ''
       # Make npm happy
