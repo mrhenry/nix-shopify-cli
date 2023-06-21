@@ -32,3 +32,11 @@ nix build --json \
   | jq -r '.[].outputs | to_entries[].value' \
   | cachix push nix-shopify-cli
 ```
+
+# How to enable the binary cache
+
+```sh
+echo "trusted-users = root $USER" | sudo tee -a /etc/nix/nix.conf;
+sudo launchctl stop org.nixos.nix-daemon;
+sudo launchctl start org.nixos.nix-daemon;
+```
