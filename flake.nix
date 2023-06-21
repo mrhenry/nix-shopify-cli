@@ -5,7 +5,7 @@
   };
 
   nixConfig = {
-    extra-trusted-substituters = [ "https://nix-shopify-cli.cachix.org" ];
+    trusted-substituters = [ "https://nix-shopify-cli.cachix.org" ];
     extra-trusted-public-keys = [
       "nix-shopify-cli.cachix.org-1:2t1aaompA/uulhaYDH/WXx+4n4IyZTv9r/zlOlyerFw="
     ];
