@@ -18,14 +18,14 @@ Alternatively you can just run the CLI directly without permanently installing i
 nix run github:mrhenry/nix-shopify-cli -- <args>
 ```
 
-# Supported Systems
+## Supported Systems
 
 - `x86_64-linux`
 - `x86_64-darwin`
 - `aarch64-linux`
 - `aarch64-darwin`
 
-# Build and push to cachix
+## Build and push to cachix
 
 ```sh
 nix build --json \
@@ -33,7 +33,7 @@ nix build --json \
   | cachix push nix-shopify-cli
 ```
 
-# How to build a new version of `shopify`
+## How to build a new version of `shopify`
 
 1. Update the `package.json` with the new version
 2. Run `npm install && rm -rf node_modules` (we only care about the lock file).
@@ -45,7 +45,7 @@ nix build --json \
 When you are happy with the new version, push it to cachix for all supported systems and
 create a new release branch named `release-v<version>`.
 
-# How to enable the binary cache
+## How to enable the binary cache
 
 ```sh
 # On MacOS
