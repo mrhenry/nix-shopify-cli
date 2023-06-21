@@ -17,3 +17,18 @@ Alternatively you can just run the CLI directly without permanently installing i
 ```sh
 nix run github:mrhenry/nix-shopify-cli -- <args>
 ```
+
+# Supported Systems
+
+- `x85_64-linux`
+- `x86_64-darwin`
+- `aarch64-linux`
+- `aarch64-darwin`
+
+# Build and push to cachix
+
+```sh
+nix build --json \
+  | jq -r '.[].outputs | to_entries[].value' \
+  | cachix push nix-shopify-cli
+```
