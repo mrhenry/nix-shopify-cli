@@ -33,6 +33,18 @@ nix build --json \
   | cachix push nix-shopify-cli
 ```
 
+# How to build a new version of `shopify`
+
+1. Update the `package.json` with the new version
+2. Run `npm install && rm -rf node_modules` (we only care about the lock file).
+3. Run `nix build`, Nix will complain that the download hash is outdated.
+4. Updated `downloadHash` in `default.nix` with the new hash.
+5. Run `nix build` again, now it should build the new version.
+6. Run `nix run -- <some args>` to test the new version.
+
+When you are happy with the new version, push it to cachix for all supported systems and
+create a new release branch named `release-v<version>`.
+
 # How to enable the binary cache
 
 ```sh
