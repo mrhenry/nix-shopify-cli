@@ -38,7 +38,7 @@ nix build --json \
 1. Update the `package.json` with the new version
 2. Run `npm install && rm -rf node_modules` (we only care about the lock file).
 3. Run `nix build`, Nix will complain that the download hash is outdated.
-4. Updated `downloadHash` in `default.nix` with the new hash.
+4. Update `downloadHash` in `default.nix` with the new hash.
 5. Run `nix build` again, now it should build the new version.
 6. Run `nix run -- <some args>` to test the new version.
 
