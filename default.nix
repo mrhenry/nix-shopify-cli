@@ -5,7 +5,7 @@ let
   version = packageJSON.dependencies."@shopify/cli";
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-/Tlv3okZLVyHNM8wsE/3uqYHrcG7MsONwsBS53bfHF4=";
+  downloadHash = "sha256-uwtVPz1MNVpNElZ0vR4DcBqrA4l32YsnbmIGlO/bVb0=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
@@ -32,12 +32,13 @@ let
       # Cache the ruby dependencies
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
       bundle config set --local without development:test
-      bundle lock --add-platform x86_64-linux
-      bundle lock --add-platform x86_64-darwin
-      bundle lock --add-platform arm-linux
-      bundle lock --add-platform arm-darwin
-      bundle lock --add-platform universal-darwin
-      bundle cache --no-install --all-platforms
+      bundle config set --local force_ruby_platform true
+      # bundle lock --add-platform x86_64-linux
+      # bundle lock --add-platform x86_64-darwin
+      # bundle lock --add-platform arm-linux
+      # bundle lock --add-platform arm-darwin
+      # bundle lock --add-platform universal-darwin
+      bundle cache --no-install
       cd -
     '';
 
