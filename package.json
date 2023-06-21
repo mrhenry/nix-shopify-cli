@@ -1,0 +1,8 @@
+{
+    "name": "shopify",
+    "private": true,
+    "dependencies": {
+        "@shopify/cli": "3.46.5",
+        "@shopify/theme": "3.46.5"
+    }
+}
