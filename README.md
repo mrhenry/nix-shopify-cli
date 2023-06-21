@@ -36,6 +36,7 @@ nix build --json \
 # How to enable the binary cache
 
 ```sh
+# On MacOS
 echo "trusted-users = root $USER" | sudo tee -a /etc/nix/nix.conf;
 sudo launchctl stop org.nixos.nix-daemon;
 sudo launchctl start org.nixos.nix-daemon;
