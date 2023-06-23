@@ -22,6 +22,8 @@ let
 
     src = pkgs.lib.cleanSource ./.;
 
+    BUILD_VERSION = version;
+
     buildPhase = ''
       # Make npm happy
       export HOME=$TMPDIR
@@ -33,7 +35,7 @@ let
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
       
       # Restore the Gemfile.lock from the source
-      curl -L 'https://github.com/Shopify/cli/raw/${version}/packages/cli-kit/assets/cli-ruby/Gemfile.lock' > Gemfile.lock
+      curl -L "https://github.com/Shopify/cli/raw/$BUILD_VERSION/packages/cli-kit/assets/cli-ruby/Gemfile.lock" > Gemfile.lock
 
       bundle config set --local without development:test
       bundle config set --local force_ruby_platform true
@@ -104,14 +106,16 @@ let
       find "$out/gems/ruby" -type f -name "gem_make.out" -delete
       find "$out/gems/ruby" -type f -name "mkmf.log" -delete
 
+      # Remove some bs files
+      rm -rf $out/node_modules/lodash-es/flake.lock
+      rm -rf $out/node_modules/lodash/flake.lock
+
       # Make sure the shopify binary can find the ruby dependencies
       makeWrapper $out/node_modules/.bin/shopify $out/bin/shopify \
         --prefix PATH : ${placeholder "out"}/gems/ruby/3.1.0/bin \
         --prefix PATH : ${pkgs.nodejs}/bin \
         --prefix PATH : ${pkgs.ruby}/bin \
         --prefix PATH : ${pkgs.git}/bin
-
-      find "$out" -type f -exec remove-references-to -t ${pkgs.stdenv.cc} -t ${pkgs.gnugrep} -t ${pkgs.gnused} '{}' +
     '';
   };
 in
