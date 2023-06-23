@@ -54,7 +54,8 @@ let
 
     src = download;
 
-    buildInputs = [ pkgs.nodejs pkgs.ruby pkgs.makeWrapper ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin [ pkgs.libiconv ];
+    nativeBuildInputs = [ pkgs.removeReferencesTo pkgs.makeWrapper ];
+    buildInputs = [ pkgs.nodejs pkgs.ruby ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin [ pkgs.libiconv ];
 
     buildPhase = ''
       # Make npm happy
@@ -85,12 +86,19 @@ let
       cp --reflink=auto -r node_modules $out/node_modules
       cp --reflink=auto -r gems $out/gems
 
+      # Remove the ffi native extension source code and build logs
+      rm -rf $out/gems/ruby/*/gems/*/ext
+      find "$out/gems/ruby" -type f -name "gem_make.out" -delete
+      find "$out/gems/ruby" -type f -name "mkmf.log" -delete
+
       # Make sure the shopify binary can find the ruby dependencies
       makeWrapper $out/node_modules/.bin/shopify $out/bin/shopify \
         --prefix PATH : ${placeholder "out"}/gems/ruby/3.1.0/bin \
         --prefix PATH : ${pkgs.nodejs}/bin \
         --prefix PATH : ${pkgs.ruby}/bin \
         --prefix PATH : ${pkgs.git}/bin
+
+      find "$out" -type f -exec remove-references-to -t ${pkgs.stdenv.cc} -t ${pkgs.gnugrep} -t ${pkgs.gnused} '{}' +
     '';
   };
 in
