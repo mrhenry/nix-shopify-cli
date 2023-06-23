@@ -5,7 +5,7 @@ let
   version = packageJSON.dependencies."@shopify/cli";
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-uwtVPz1MNVpNElZ0vR4DcBqrA4l32YsnbmIGlO/bVb0=";
+  downloadHash = "sha256-teZhTiTGrH9rrYD+m741SdsGhS3V9TTNCLOac5qlVr0=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
@@ -18,7 +18,7 @@ let
     outputHashAlgo = "sha256";
     outputHash = downloadHash;
 
-    nativeBuildInputs = [ pkgs.nodejs pkgs.ruby ];
+    nativeBuildInputs = [ pkgs.nodejs pkgs.ruby pkgs.curl pkgs.cacert ];
 
     src = pkgs.lib.cleanSource ./.;
 
@@ -31,8 +31,14 @@ let
 
       # Cache the ruby dependencies
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
+      
+      # Restore the Gemfile.lock from the source
+      curl -L 'https://github.com/Shopify/cli/raw/${version}/packages/cli-kit/assets/cli-ruby/Gemfile.lock' > Gemfile.lock
+
       bundle config set --local without development:test
       bundle config set --local force_ruby_platform true
+      bundle config set --local frozen true
+      bundle config set --local deployment true
       bundle cache --no-install
       cd -
     '';
