@@ -5,7 +5,7 @@ let
   version = packageJSON.dependencies."@shopify/cli";
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-teZhTiTGrH9rrYD+m741SdsGhS3V9TTNCLOac5qlVr0=";
+  downloadHash = "sha256-taH8Rb83RtkjK8XAtkWrcT0uVAo3SFpaVkznXiyVTRk=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
@@ -40,6 +40,13 @@ let
       bundle config set --local frozen true
       bundle config set --local deployment true
       bundle cache --no-install
+
+      # cleanup
+      rm -rf vendor/bundle/ruby/3.1.0/gems/bundler-*
+      rm -rf vendor/bundle/ruby/3.1.0/specifications/bundler-2.3.20.gemspec
+      rm -rf vendor/bundle/ruby/3.1.0/bin/bundler
+      rm -rf vendor/bundle/ruby/3.1.0/bin/bundle
+
       cd -
     '';
 
