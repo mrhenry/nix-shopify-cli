@@ -20,6 +20,18 @@
         };
       in
       {
+        checks = {
+          bundle = cli;
+          version = pkgs.testers.testVersion {
+            package = cli;
+            command = "shopify version";
+          };
+          themeCheckVersion = pkgs.testers.testVersion {
+            package = cli;
+            command = "HOME=/tmp shopify theme check --version";
+            version = "1.15.0";
+          };
+        };
         packages.default = cli;
       }
     );
