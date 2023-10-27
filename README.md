@@ -18,6 +18,24 @@ Alternatively you can just run the CLI directly without permanently installing i
 nix run github:mrhenry/nix-shopify-cli -- <args>
 ```
 
+# Usage as a flake
+
+[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/mrhenry/nix-shopify-cli/badge)](https://flakehub.com/flake/mrhenry/nix-shopify-cli)
+
+Add nix-shopify-cli to your `flake.nix`:
+
+```nix
+{
+  inputs.nix-shopify-cli.url = "https://flakehub.com/f/mrhenry/nix-shopify-cli/*.tar.gz";
+
+  outputs = { self, nix-shopify-cli }: {
+    # Use in your outputs
+  };
+}
+
+```
+
+
 ## Supported Systems
 
 - `x86_64-linux`
