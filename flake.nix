@@ -4,13 +4,6 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  nixConfig = {
-    extra-substituters = [ "https://nix-shopify-cli.cachix.org" ];
-    extra-trusted-public-keys = [
-      "nix-shopify-cli.cachix.org-1:2t1aaompA/uulhaYDH/WXx+4n4IyZTv9r/zlOlyerFw="
-    ];
-  };
-
   outputs = { self, nixpkgs, flake-utils } @ inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let

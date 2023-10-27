@@ -4,7 +4,7 @@ This is the [shopify-cli](https://github.com/Shopify/cli) packaged for Nix.
 
 ## Current version
 
-The current version is [`3.46.5`](https://github.com/Shopify/cli/releases/tag/3.46.5).
+The current version is [`3.50.0`](https://github.com/Shopify/cli/releases/tag/3.50.0).
 
 ## Installation
 
@@ -25,12 +25,11 @@ nix run github:mrhenry/nix-shopify-cli -- <args>
 - `aarch64-linux`
 - `aarch64-darwin`
 
-## Build and push to cachix
+## Build
 
 ```sh
-nix build --json \
-  | jq -r '.[].outputs | to_entries[].value' \
-  | cachix push nix-shopify-cli
+nix build
+nix flake check
 ```
 
 ## How to build a new version of `shopify`
@@ -44,12 +43,3 @@ nix build --json \
 
 When you are happy with the new version, push it to cachix for all supported systems and
 create a new release branch named `release-v<version>`.
-
-## How to enable the binary cache
-
-```sh
-# On MacOS
-echo "trusted-users = root $USER" | sudo tee -a /etc/nix/nix.conf;
-sudo launchctl stop org.nixos.nix-daemon;
-sudo launchctl start org.nixos.nix-daemon;
-```
