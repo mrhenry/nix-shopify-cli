@@ -25,7 +25,27 @@
             version = "1.15.0";
           };
         };
+
         packages.default = cli;
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.nodejs
+            pkgs.ruby
+            (pkgs.writeShellScriptBin "do-release"
+              ''
+                nix flake check
+                bare_version="$(nix run . -- version | ${pkgs.gnused}/bin/sed 's|Current Shopify CLI version: ||')"
+                version="v$bare_version"
+
+                ${pkgs.gh}/bin/gh release create "$version" \
+                  --draft \
+                  --target "$(${pkgs.git}/bin/git rev-parse HEAD)" \
+                  --title "$version" \
+                  --notes "Updated to version [\`$version\`](https://github.com/Shopify/cli/releases/tag/$bare_version)"
+              '')
+          ];
+        };
       }
     );
 }

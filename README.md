@@ -35,7 +35,6 @@ Add nix-shopify-cli to your `flake.nix`:
 
 ```
 
-
 ## Supported Systems
 
 - `x86_64-linux`
@@ -54,10 +53,8 @@ nix flake check
 
 1. Update the `package.json` with the new version
 2. Run `npm install && rm -rf node_modules` (we only care about the lock file).
-3. Run `nix build`, Nix will complain that the download hash is outdated.
+3. Run `nix flake check`, Nix will complain that the download hash is outdated.
 4. Update `downloadHash` in `default.nix` with the new hash.
-5. Run `nix build` again, now it should build the new version.
+5. Run `nix flake check` again, now it should build the new version.
 6. Run `nix run -- <some args>` to test the new version.
-
-When you are happy with the new version, push it to cachix for all supported systems and
-create a new release branch named `release-v<version>`.
+7. When you are happy with the new version, create a new release/tag and push it to GitHub.
