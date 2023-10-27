@@ -57,4 +57,7 @@ nix flake check
 4. Update `downloadHash` in `default.nix` with the new hash.
 5. Run `nix flake check` again, now it should build the new version.
 6. Run `nix run -- <some args>` to test the new version.
-7. When you are happy with the new version, create a new release/tag and push it to GitHub.
+7. When you are happy with the new version:
+   1. push the changes to GitHub
+   2. `nix develop --command do-release`
+   3. Publish the draft release on github
