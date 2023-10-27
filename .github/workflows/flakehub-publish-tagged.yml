@@ -22,6 +22,6 @@ jobs:
       - uses: "DeterminateSystems/nix-installer-action@main"
       - uses: "DeterminateSystems/flakehub-push@main"
         with:
-          visibility: "unlisted"
+          visibility: "public"
           name: "mrhenry/nix-shopify-cli"
           tag: "${{ inputs.tag }}"
