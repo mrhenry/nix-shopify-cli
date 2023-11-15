@@ -2,10 +2,6 @@
 
 This is the [shopify-cli](https://github.com/Shopify/cli) packaged for Nix.
 
-## Current version
-
-The current version is [`3.50.0`](https://github.com/Shopify/cli/releases/tag/3.50.0).
-
 ## Installation
 
 ```sh
