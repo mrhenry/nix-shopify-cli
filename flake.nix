@@ -28,7 +28,6 @@
 
         packages = {
           default = cli;
-          download = cli.download;
         };
 
         devShells.default = pkgs.mkShell {
