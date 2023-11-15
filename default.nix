@@ -5,7 +5,7 @@ let
   version = packageJSON.dependencies."@shopify/cli";
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-4Y7a3JYHf2yQQWrl0KDUyLBQ54KMV82zHNstM5fG2oE=";
+  downloadHash = "sha256-3KnIbvZYLGYduDP5Jff5lt1h47B4Hhh+B0d0Z2sfDNU=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
@@ -31,13 +31,16 @@ let
       # Install the npm dependencies but don't run any build scripts
       npm ci --ignore-scripts
 
+      mkdir .bundle
+      export BUNDLE_APP_CONFIG=$PWD/.bundle
+      export BUNDLE_WITHOUT=development:test
+
       # Cache the ruby dependencies
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
       
       # Restore the Gemfile.lock from the source
       curl -L "https://github.com/Shopify/cli/raw/$BUILD_VERSION/packages/cli-kit/assets/cli-ruby/Gemfile.lock" > Gemfile.lock
 
-      bundle config set --local without development:test
       bundle config set --local force_ruby_platform true
       bundle config set --local frozen true
       bundle config set --local deployment true
@@ -57,6 +60,7 @@ let
       cp --reflink=auto ./package.json $out/package.json
       cp --reflink=auto ./package-lock.json $out/package-lock.json
       cp --reflink=auto -r node_modules $out/node_modules
+      cp --reflink=auto -r .bundle $out/.bundle
     '';
 
     # Don't fixup the output as that would make the output system dependent
@@ -80,31 +84,35 @@ let
       npm rebuild
 
       # Install the ruby dependencies
-      mkdir gems
-      LOCAL_GEMS_PATH=$PWD/gems
-      cd node_modules/@shopify/cli-kit/assets/cli-ruby
-      bundle config set --local path $LOCAL_GEMS_PATH
+      export BUNDLE_APP_CONFIG=$PWD/.bundle
       bundle config set --local without development:test
+      bundle config set --local path $PWD/.bundle/gems
+    
+      cd node_modules/@shopify/cli-kit/assets/cli-ruby
       bundle install --local
-      bundle config set --local path ${placeholder "out"}/gems
       cd -
 
       # Make sure shopify doesn't try to install the ruby dependencies
       substituteInPlace node_modules/@shopify/cli-kit/dist/public/node/ruby.js \
-        --replace "await installCLIDependencies" "// await installCLIDependencies"
+        --replace "await installCLIDependencies" "// await installCLIDependencies" \
+        --replace "BUNDLE_APP_CONFIG: envPaths('shopify-gems').cache" "// BUNDLE_APP_CONFIG: envPaths('shopify-gems').cache"
     '';
 
     installPhase = ''
       mkdir -p $out
+
+      # Set the final location
+      bundle config set --local path $out/.bundle/gems
+
       cp --reflink=auto ./package.json $out/package.json
       cp --reflink=auto ./package-lock.json $out/package-lock.json
       cp --reflink=auto -r node_modules $out/node_modules
-      cp --reflink=auto -r gems $out/gems
+      cp --reflink=auto -r .bundle $out/.bundle
 
       # Remove the ffi native extension source code and build logs
-      rm -rf $out/gems/ruby/*/gems/*/ext
-      find "$out/gems/ruby" -type f -name "gem_make.out" -delete
-      find "$out/gems/ruby" -type f -name "mkmf.log" -delete
+      rm -rf $out/.bundle/gems/ruby/*/gems/*/ext
+      find "$out/.bundle/gems/ruby" -type f -name "gem_make.out" -delete
+      find "$out/.bundle/gems/ruby" -type f -name "mkmf.log" -delete
 
       # Remove some bs files
       rm -rf $out/node_modules/lodash-es/flake.lock
@@ -112,11 +120,17 @@ let
 
       # Make sure the shopify binary can find the ruby dependencies
       makeWrapper $out/node_modules/.bin/shopify $out/bin/shopify \
-        --prefix PATH : ${placeholder "out"}/gems/ruby/3.1.0/bin \
+        --prefix PATH : $out/.bundle/gems/ruby/3.1.0/bin \
         --prefix PATH : ${pkgs.nodejs}/bin \
         --prefix PATH : ${pkgs.ruby}/bin \
-        --prefix PATH : ${pkgs.git}/bin
+        --prefix PATH : ${pkgs.git}/bin \
+        --set BUNDLE_APP_CONFIG $out/.bundle \
+        --set BUNDLE_PATH $out/.bundle/gems
     '';
+
+    passthru = {
+      inherit download;
+    };
   };
 in
 build
