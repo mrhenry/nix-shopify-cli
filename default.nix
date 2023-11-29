@@ -5,7 +5,7 @@ let
   version = packageJSON.dependencies."@shopify/cli";
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-3KnIbvZYLGYduDP5Jff5lt1h47B4Hhh+B0d0Z2sfDNU=";
+  downloadHash = "sha256-aGC1unmcSULXLdu7uCugwVEp0wPUTm2zg2BZxfm33a4=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
@@ -31,8 +31,8 @@ let
       # Install the npm dependencies but don't run any build scripts
       npm ci --ignore-scripts
 
-      mkdir .bundle
-      export BUNDLE_APP_CONFIG=$PWD/.bundle
+      mkdir .bundle-path
+      export BUNDLE_PATH=$PWD/.bundle-path
       export BUNDLE_WITHOUT=development:test
 
       # Cache the ruby dependencies
@@ -60,7 +60,7 @@ let
       cp --reflink=auto ./package.json $out/package.json
       cp --reflink=auto ./package-lock.json $out/package-lock.json
       cp --reflink=auto -r node_modules $out/node_modules
-      cp --reflink=auto -r .bundle $out/.bundle
+      cp --reflink=auto -r .bundle-path $out/.bundle-path
     '';
 
     # Don't fixup the output as that would make the output system dependent
@@ -84,35 +84,29 @@ let
       npm rebuild
 
       # Install the ruby dependencies
-      export BUNDLE_APP_CONFIG=$PWD/.bundle
-      bundle config set --local without development:test
-      bundle config set --local path $PWD/.bundle/gems
+      export BUNDLE_PATH=$PWD/.bundle-path
+      export BUNDLE_WITHOUT=development:test
     
       cd node_modules/@shopify/cli-kit/assets/cli-ruby
-      bundle install --local
+      bundle install
+      rm -rf vendor/bundle/ruby/*/gems/*/ext
+      find "vendor/bundle/ruby" -type f -name "gem_make.out" -delete
+      find "vendor/bundle/ruby" -type f -name "mkmf.log" -delete
       cd -
 
       # Make sure shopify doesn't try to install the ruby dependencies
       substituteInPlace node_modules/@shopify/cli-kit/dist/public/node/ruby.js \
         --replace "await installCLIDependencies" "// await installCLIDependencies" \
-        --replace "BUNDLE_APP_CONFIG: envPaths('shopify-gems').cache" "// BUNDLE_APP_CONFIG: envPaths('shopify-gems').cache"
+        --replace "BUNDLE_PATH: envPaths('shopify-gems').cache" "// BUNDLE_PATH: envPaths('shopify-gems').cache"
     '';
 
     installPhase = ''
       mkdir -p $out
 
-      # Set the final location
-      bundle config set --local path $out/.bundle/gems
-
       cp --reflink=auto ./package.json $out/package.json
       cp --reflink=auto ./package-lock.json $out/package-lock.json
       cp --reflink=auto -r node_modules $out/node_modules
-      cp --reflink=auto -r .bundle $out/.bundle
-
-      # Remove the ffi native extension source code and build logs
-      rm -rf $out/.bundle/gems/ruby/*/gems/*/ext
-      find "$out/.bundle/gems/ruby" -type f -name "gem_make.out" -delete
-      find "$out/.bundle/gems/ruby" -type f -name "mkmf.log" -delete
+      cp --reflink=auto -r .bundle-path $out/.bundle-path
 
       # Remove some bs files
       rm -rf $out/node_modules/lodash-es/flake.lock
@@ -120,12 +114,11 @@ let
 
       # Make sure the shopify binary can find the ruby dependencies
       makeWrapper $out/node_modules/.bin/shopify $out/bin/shopify \
-        --prefix PATH : $out/.bundle/gems/ruby/3.1.0/bin \
+        --prefix PATH : $out/.bundle-path/gems/ruby/3.1.0/bin \
         --prefix PATH : ${pkgs.nodejs}/bin \
         --prefix PATH : ${pkgs.ruby}/bin \
         --prefix PATH : ${pkgs.git}/bin \
-        --set BUNDLE_APP_CONFIG $out/.bundle \
-        --set BUNDLE_PATH $out/.bundle/gems
+        --set BUNDLE_PATH $out/.bundle-path
     '';
 
     passthru = {
