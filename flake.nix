@@ -4,7 +4,7 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils } @ inputs:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -22,7 +22,7 @@
           themeCheckVersion = pkgs.testers.testVersion {
             package = cli;
             command = "HOME=/tmp shopify theme check --version";
-            version = "1.15.0";
+            version = "2.0.1";
           };
         };
 
