@@ -22,7 +22,7 @@
           themeCheckVersion = pkgs.testers.testVersion {
             package = cli;
             command = "HOME=/tmp shopify theme check --version";
-            version = "2.0.1";
+            version = "2.2.2";
           };
         };
 
