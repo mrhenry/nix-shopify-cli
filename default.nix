@@ -2,16 +2,19 @@
 let
   # read the package version
   packageJSON = builtins.fromJSON (builtins.readFile ./package.json);
+  packageLockJSON = builtins.fromJSON (builtins.readFile ./package-lock.json);
   version = packageJSON.dependencies."@shopify/cli";
+  cliKitVersion = packageLockJSON.packages."node_modules/@shopify/cli-kit".version;
 
   # This needs to be updated every time the package closure is changed
-  downloadHash = "sha256-MBW9uCr3m85Qe4CEdLaZVo/0GeVX1T1V/DrzMF+imE0=";
+  downloadHash = "sha256-bWGsHe7rqKI+uM5ZpUBzQKQ4AJhtPc6KYbz6QgyNRlw=";
 
   # Download but don't install/build the package dependencies
   # The output hash should be stable across diferent platforms/systems
   download = pkgs.stdenv.mkDerivation {
     pname = "shopify-download";
     version = version;
+    cliKitVersion = cliKitVersion;
 
     # Give network access but check the hash of the output
     outputHashMode = "recursive";
@@ -22,7 +25,7 @@ let
 
     src = pkgs.lib.cleanSource ./.;
 
-    BUILD_VERSION = version;
+    BUILD_VERSION = cliKitVersion;
 
     buildPhase = ''
       # Make npm happy

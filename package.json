@@ -2,7 +2,7 @@
     "name": "shopify",
     "private": true,
     "dependencies": {
-        "@shopify/cli": "3.58.2",
+        "@shopify/cli": "3.59.2",
         "@shopify/theme": "3.58.2"
     }
 }
