@@ -48,12 +48,10 @@ nix flake check
 ## How to build a new version of `shopify`
 
 1. Update the `package.json` with the new version
-2. Run `npm install && rm -rf node_modules` (we only care about the lock file).
-3. Run `nix flake check`, Nix will complain that the download hash is outdated.
-4. Update `downloadHash` in `default.nix` with the new hash.
-5. Run `nix flake check` again, now it should build the new version.
-6. Run `nix run -- <some args>` to test the new version.
-7. When you are happy with the new version:
+2. Run `nix develop --command update-hashes`
+3. Run `nix flake check` again, now it should build the new version.
+4. Run `nix run -- <some args>` to test the new version.
+5. When you are happy with the new version:
    1. push the changes to GitHub
    2. `nix develop --command do-release`
    3. Publish the draft release on github
