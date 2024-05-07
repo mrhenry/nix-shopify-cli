@@ -8,9 +8,11 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        cli = import ./default.nix {
-          inherit pkgs system;
-        };
+
+        packageJSON = builtins.fromJSON (builtins.readFile ./package.json);
+        version = packageJSON.dependencies."@shopify/cli";
+
+        cli = self.packages.${system}.cli-node;
       in
       {
         checks = {
@@ -27,13 +29,39 @@
         };
 
         packages = {
-          default = cli;
+          default = self.packages.${system}.cli-node;
+
+          cli-node = pkgs.callPackage ./cli-node.nix { version = version; cli-ruby = self.packages.${system}.cli-ruby; };
+          cli-ruby = pkgs.callPackage ./cli-ruby.nix { version = version; };
         };
 
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            pkgs.nodejs
-            pkgs.ruby
+            (pkgs.writeShellScriptBin "update-hashes"
+              ''
+                set -e
+                set -o pipefail
+
+                ROOT=$PWD
+
+                export PATH="${pkgs.jq}/bin:$PATH"
+                export PATH="${pkgs.nodejs}/bin:$PATH"
+                export PATH="${pkgs.bundix}/bin:$PATH"
+                export PATH="${pkgs.prefetch-npm-deps}/bin:$PATH"
+                export PATH="${pkgs.nix-prefetch-github}/bin:$PATH"
+
+                npm update
+                npm install
+                rm -rf node_modules
+
+                prefetch-npm-deps ./package-lock.json | jq -R . > $ROOT/cli-node-deps.nix
+
+                nix-prefetch-github --rev ${version}  Shopify cli | jq .hash > $ROOT/cli-ruby-src.nix
+
+                pushd $(nix eval .#cli-ruby.source | jq -r .)
+                bundix --gemset=$ROOT/cli-ruby-gemset.nix
+                popd
+              '')
             (pkgs.writeShellScriptBin "do-release"
               ''
                 nix flake check
