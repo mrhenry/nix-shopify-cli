@@ -57,6 +57,7 @@
                 prefetch-npm-deps ./package-lock.json | jq -R . > $ROOT/cli-node-deps.nix
 
                 nix-prefetch-github --rev ${version}  Shopify cli | jq .hash > $ROOT/cli-ruby-src.nix
+                nix build .#cli-ruby
 
                 pushd $(nix eval .#cli-ruby.source | jq -r .)
                 bundix --gemset=$ROOT/cli-ruby-gemset.nix
