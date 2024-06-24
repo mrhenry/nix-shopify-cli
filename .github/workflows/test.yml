@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  push:
+
+jobs:
+  test:
+    permissions:
+      id-token: "write"
+      contents: "read"
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, linux-aarch64, macos-13, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: |
+          nix flake check
