@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: "github-actions"
+  versioning-strategy: increase
+  directory: "/"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: npm
+  versioning-strategy: increase
+  directory: /
+  schedule:
+    interval: "weekly"
+  allow:
+  - dependency-name: "*"
+    dependency-type: "direct"
