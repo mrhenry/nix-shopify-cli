@@ -1,0 +1,19 @@
+name: Tests
+
+on:
+  push:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-13, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - run: |
+          nix flake check
