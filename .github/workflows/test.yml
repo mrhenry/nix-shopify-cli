@@ -7,7 +7,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, linux-aarch64, macos-13, macos-latest]
 
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }}
@@ -17,6 +17,3 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - run: |
           nix flake check
-      - if: matrix.os == 'ubuntu-latest'
-        run: |
-          nix flake check --system aarch64-linux
