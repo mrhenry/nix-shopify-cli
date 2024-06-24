@@ -17,3 +17,6 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - run: |
           nix flake check
+      - if: matrix.os == 'ubuntu-latest'
+        run: |
+          nix flake check --system aarch64-linux
