@@ -1,15 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "lockFileMaintenance": {
-    "enabled": true
+  "postUpgradeTasks": {
+    "commands": [
+      "nix develop --command update-hashes"
+    ]
   },
   "github-actions": {
     "enabled": true
   },
   "npm": {
-    "enabled": true
+    "enabled": true,
+    "lockFileMaintenance": {
+      "enabled": true
+    }
   },
   "nix": {
-    "enabled": true
+    "enabled": true,
+    "lockFileMaintenance": {
+      "enabled": true
+    }
   }
 }
