@@ -6,7 +6,7 @@
         "shopify": "node_modules/@shopify/cli/bin/run.js"
     },
     "dependencies": {
-        "@shopify/cli": "3.63.0",
+        "@shopify/cli": "3.63.1",
         "@shopify/theme": "3.58.2"
     }
 }
