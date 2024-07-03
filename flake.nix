@@ -50,6 +50,7 @@
                 export PATH="${pkgs.prefetch-npm-deps}/bin:$PATH"
                 export PATH="${pkgs.nix-prefetch-github}/bin:$PATH"
 
+                rm -f package-lock.json
                 npm update
                 npm install
                 rm -rf node_modules
